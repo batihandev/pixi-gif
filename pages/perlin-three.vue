@@ -6,13 +6,9 @@ const vertexShader = ref(vertexShaderCode);
 const fragmentShader = ref(fragmentShaderCode);
 
 let Theme = { _darkred: 0x000000 };
-const scene = ref(null);
-const camera = ref(null);
-const renderer = ref(null);
-const container = ref(null);
-const start = ref(Date.now());
-// let scene, camera, renderer, container;
-// let start = Date.now();
+
+let scene, camera, renderer, container;
+let start = Date.now();
 let _width, _height;
 const containerRef = ref(null);
 let options = {
@@ -64,19 +60,44 @@ function onWindowResize() {
 }
 
 let mat;
-
-function createPrimitive() {
+var primitiveElement = function () {
+  this.mesh = new THREE.Object3D();
   mat = new THREE.ShaderMaterial({
     wireframe: false,
+    //fog: true,
     uniforms: {
-      time: { type: "f", value: 0.0 },
-      pointscale: { type: "f", value: 0.0 },
-      decay: { type: "f", value: 0.0 },
-      complex: { type: "f", value: 0.0 },
-      waves: { type: "f", value: 0.0 },
-      eqcolor: { type: "f", value: 0.0 },
-      fragment: { type: "i", value: true },
-      redhell: { type: "i", value: true },
+      time: {
+        type: "f",
+        value: 0.0,
+      },
+      pointscale: {
+        type: "f",
+        value: 0.0,
+      },
+      decay: {
+        type: "f",
+        value: 0.0,
+      },
+      complex: {
+        type: "f",
+        value: 0.0,
+      },
+      waves: {
+        type: "f",
+        value: 0.0,
+      },
+      eqcolor: {
+        type: "f",
+        value: 0.0,
+      },
+      fragment: {
+        type: "i",
+        value: true,
+      },
+      redhell: {
+        type: "i",
+        value: true,
+      },
     },
     vertexShader: vertexShader.value,
     fragmentShader: fragmentShader.value,
@@ -86,12 +107,18 @@ function createPrimitive() {
 
   //---
   this.mesh.add(mesh);
+};
+function createPrimitive() {
+  _primitive = new primitiveElement();
+  scene.add(_primitive.mesh);
 }
 
 let _primitive;
 
 function createGUI() {
-  let gui = new dat.GUI();
+  const { $createGUI } = useNuxtApp();
+
+  let gui = $createGUI();
   let camGUI = gui.addFolder("Camera");
   //cam.add(, 'speed', 0.0, 30.00).listen();
   camGUI.add(camera.position, "z", 3, 20).name("Zoom").listen();
@@ -144,17 +171,34 @@ onMounted(() => {
   createGUI();
   animation();
 });
+onUnmounted(() => {
+  const { $destroyGUI } = useNuxtApp();
+
+  $destroyGUI();
+});
 </script>
 <template>
-  <div>
-    <div class="container-fluid fixed-top header disable-selection">
-      <div class="row">
-        <div class="col">
-          <h1><strong>Perlin Noise</strong></h1>
-          <!-- <p class="small" href="#" role="button"><strong>708.588 POINTS</strong></p> -->
-        </div>
-      </div>
+  <div class="relative w-full">
+    <div
+      class="absolute bottom-5 left-5 z-20 whitespace-nowrap font-goldman text-xl font-bold text-white"
+    >
+      Perlin Noise
     </div>
-    <div ref="containerRef" id="container"></div>
+    <div
+      class="container-ref z-10 w-full"
+      ref="containerRef"
+      id="container"
+    ></div>
   </div>
 </template>
+<style>
+.container-ref canvas {
+  width: 100% !important;
+  max-height: calc(100vh - 60px) !important;
+}
+.close-button.close-bottom {
+  background-color: #fff !important;
+  border: 1px solid #000 !important;
+  color: #000 !important;
+}
+</style>

@@ -20,6 +20,7 @@
     "@nuxtjs/tailwindcss": "^6.7.0",
     "@types/node": "^20.2.5",
     "@typescript-eslint/parser": "^5.59.7",
+    "dat.gui": "^0.7.9",
     "eslint": "^8.41.0",
     "eslint-config-prettier": "^8.8.0",
     "eslint-plugin-prettier": "^4.2.1",
