@@ -253,6 +253,9 @@ onMounted(() => {
     transparent: true,
     backgroundAlpha: 0,
   });
+  if (process.client && canvas.value && canvas.value.getContext("2d")) {
+    canvas.value.getContext("2d").willReadFrequently = true;
+  }
   app.stage.filters = [new KawaseBlurFilter(30, 10, true)];
   colorPalette = new ColorPalette();
   // Create colour palette

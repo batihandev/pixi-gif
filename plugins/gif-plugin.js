@@ -12,7 +12,7 @@ export default defineNuxtPlugin(() => {
       width: 1920,
       height: 1080,
       transparent: "ffffff00",
-      repeat: -1,
+      repeat: 0,
     });
     return gif;
   };

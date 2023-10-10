@@ -182,6 +182,9 @@ onMounted(() => {
     // transparent background, we will be creating a gradient background later using CSS
     backgroundAlpha: 0,
   });
+  if (process.client && canvas.value && canvas.value.getContext("2d")) {
+    canvas.value.getContext("2d").willReadFrequently = true;
+  }
   app.stage.filters = [new KawaseBlurFilter(30, 10, true)];
   const colorPalette = new ColorPalette();
 
@@ -192,7 +195,7 @@ onMounted(() => {
   }
   console.log(renderStarted.value);
   if (!window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-    app.ticker.maxFPS = 30; // Set the maxFPS to 10
+    app.ticker.maxFPS = 60; // Set the maxFPS to 10
     app.ticker.add(() => {
       orbPool.forEach((orb) => {
         // Check if orb is outside the bounds
@@ -214,7 +217,7 @@ onMounted(() => {
       orb.render();
     });
   }
-  const numFrames = 40; // Adjust as needed
+  const numFrames = 60; // Adjust as needed
   const orbCanvas = canvas.value;
   let frameCounter = 0;
   const frameDelay = 100; // 100ms per frame (adjust as needed)
