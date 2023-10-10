@@ -1,0 +1,42 @@
+{
+  "name": "nuxt-app",
+  "private": true,
+  "scripts": {
+    "build": "nuxt build",
+    "dev": "nuxt dev",
+    "devssl": "nuxt dev --https --ssl-cert ssl.crt --ssl-key ssl.key",
+    "generate": "nuxt generate",
+    "preview": "nuxt preview",
+    "postinstall": "nuxt prepare",
+    "lint:js": "eslint --ext \".ts,.vue\" --ignore-path .gitignore .",
+    "lint:prettier": "prettier --check .",
+    "lint": "yarn lint:js && yarn lint:prettier",
+    "lintfix": "prettier --write --list-different . && yarn lint:js --fix"
+  },
+  "devDependencies": {
+    "@nuxt/image-edge": "1.0.0-28089316.69d3bcc",
+    "@nuxtjs/eslint-config-typescript": "^12.0.0",
+    "@nuxtjs/google-fonts": "^3.0.2",
+    "@nuxtjs/tailwindcss": "^6.7.0",
+    "@types/node": "^20.2.5",
+    "@typescript-eslint/parser": "^5.59.7",
+    "eslint": "^8.41.0",
+    "eslint-config-prettier": "^8.8.0",
+    "eslint-plugin-prettier": "^4.2.1",
+    "lodash.debounce": "^4.0.8",
+    "nuxt": "^3.5.2",
+    "nuxt-icon": "^0.4.1",
+    "prettier": "^2.8.8",
+    "prettier-plugin-tailwindcss": "^0.3.0",
+    "sass": "^1.62.1",
+    "typescript": "^5.0.4"
+  },
+  "dependencies": {
+    "@headlessui/vue": "^1.7.16",
+    "@splidejs/vue-splide": "^0.6.12",
+    "mosha-vue-toastify": "^1.0.23",
+    "three": "^0.157.0",
+    "vee-validate": "^4.11.6",
+    "yup": "^1.2.0"
+  }
+}
