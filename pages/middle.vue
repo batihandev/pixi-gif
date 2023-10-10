@@ -1,4 +1,4 @@
 <script setup lang="ts"></script>
 <template>
-  <div><ColorfullBg /></div>
+  <div><ColorfullBgMiddle /></div>
 </template>

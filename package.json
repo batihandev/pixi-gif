@@ -33,8 +33,12 @@
   },
   "dependencies": {
     "@headlessui/vue": "^1.7.16",
+    "@pixi/filter-kawase-blur": "^5.1.1",
     "@splidejs/vue-splide": "^0.6.12",
+    "hsl-to-hex": "^1.0.0",
     "mosha-vue-toastify": "^1.0.23",
+    "pixi.js": "^7.3.1",
+    "simplex-noise": "^4.0.1",
     "three": "^0.157.0",
     "vee-validate": "^4.11.6",
     "yup": "^1.2.0"
