@@ -1,14 +1,18 @@
 <script setup>
 import * as THREE from "three";
-import fragmentShaderCode from "@/assets/shaders/fragmentShader.fs";
-import vertexShaderCode from "@/assets/shaders/vertexShader.vs";
-
-const fragmentShader = ref(fragmentShaderCode);
+import vertexShaderCode from "~/assets/shaders/vertexShader";
+import fragmentShaderCode from "~/assets/shaders/fragmentShader";
 const vertexShader = ref(vertexShaderCode);
-let Theme = { _darkred: 0x000000 };
+const fragmentShader = ref(fragmentShaderCode);
 
-let scene, camera, renderer, container;
-let start = Date.now();
+let Theme = { _darkred: 0x000000 };
+const scene = ref(null);
+const camera = ref(null);
+const renderer = ref(null);
+const container = ref(null);
+const start = ref(Date.now());
+// let scene, camera, renderer, container;
+// let start = Date.now();
 let _width, _height;
 const containerRef = ref(null);
 let options = {
@@ -74,10 +78,10 @@ function createPrimitive() {
       fragment: { type: "i", value: true },
       redhell: { type: "i", value: true },
     },
-    vertexShader: document.getElementById("vertexShader").textContent,
-    fragmentShader: document.getElementById("fragmentShader").textContent,
+    vertexShader: vertexShader.value,
+    fragmentShader: fragmentShader.value,
   });
-  let geo = new THREE.IcosahedronBufferGeometry(3, 7);
+  let geo = new THREE.IcosahedronGeometry(3, 7);
   let mesh = new THREE.Points(geo, mat);
 
   //---

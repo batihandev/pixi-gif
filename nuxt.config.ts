@@ -90,22 +90,6 @@ export default defineNuxtConfig({
       // ],
     },
   },
-  build: {
-    extend(config, { isClient }) {
-      if (isClient) {
-        // Handle .fs and .vs files as raw strings
-        config.module.rules.push({
-          test: /\.(fs|vs)$/,
-          use: "raw-loader",
-        });
-        config.module.rules.push({
-          test: /\.js$/,
-          // Your JavaScript loader configuration here
-        });
-      }
-    },
-  },
-
   css: ["mosha-vue-toastify/dist/style.css"],
   plugins: [{ src: "~/plugins/gif-plugin.js", mode: "client" }],
 
@@ -124,6 +108,10 @@ export default defineNuxtConfig({
     logLevel: "info",
     optimizeDeps: {
       include: ["@headlessui/vue", "vue", "pinia"],
+    },
+    define: {
+      // Add the raw loader settings
+      "process.env": {},
     },
   },
 });

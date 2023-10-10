@@ -1,5 +1,5 @@
-
-  // GLSL textureless classic 3D noise "cnoise",
+const vertexShaderCode = `
+// GLSL textureless classic 3D noise "cnoise",
   // with an RSL-style periodic variant "pnoise".
   // Author:  Stefan Gustavson (stefan.gustavson@liu.se)
   // Version: 2011-10-11
@@ -219,6 +219,8 @@
     gl_PointSize = (pointscale);
     //gl_ClipDistance[0];
   
-  }
+  } 
   
-  
+`;
+
+export default vertexShaderCode;
