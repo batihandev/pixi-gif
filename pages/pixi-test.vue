@@ -170,10 +170,49 @@ class Orb {
 const canvas = ref(null);
 const link = ref(null);
 const loadingText = ref("Creating Gif...");
+const numFrames = 60; // Adjust as needed
 
-onMounted(() => {
+let frameCounter = 0;
+const frameDelay = 100; // 100ms per frame (adjust as needed)
+let rendered = false;
+const start = ref(false);
+const startCapturing = () => {
+  start.value = true;
   const { $createGif } = useNuxtApp();
   const gif = $createGif();
+  function captureFrame() {
+    if (frameCounter < numFrames) {
+      gif.addFrame(canvas.value, { copy: true, delay: frameDelay });
+      frameCounter++;
+      requestAnimationFrame(captureFrame);
+    } else {
+      // If we've captured all frames, finish the GIF
+      if (!renderStarted.value) {
+        loadingText.value = "Rendering GIF...";
+        gif.render();
+      }
+      setRenderStarted(true);
+      rendered = true;
+    }
+  }
+  if (!rendered) {
+    captureFrame();
+  }
+  gif.on("finished", function (blob) {
+    setRenderStarted(false);
+    // Create a download link for the GIF
+    link.value.href = URL.createObjectURL(blob);
+    link.value.download = "animated_orbs.gif";
+    link.value.textContent = "Download GIF";
+    console.log("finished");
+    loadingText.value = "Download GIF";
+    // Append the download link to the DOM
+  });
+};
+const clickHandler = () => {
+  start.value = false;
+};
+onMounted(() => {
   const app = new PIXI.Application({
     // render to <canvas class="orb-canvas"></canvas>
     view: canvas.value,
@@ -215,40 +254,6 @@ onMounted(() => {
       orb.render();
     });
   }
-  const numFrames = 60; // Adjust as needed
-  const orbCanvas = canvas.value;
-  let frameCounter = 0;
-  const frameDelay = 100; // 100ms per frame (adjust as needed)
-  let rendered = false;
-
-  function captureFrame() {
-    if (frameCounter < numFrames) {
-      gif.addFrame(orbCanvas, { copy: true, delay: frameDelay });
-      frameCounter++;
-      requestAnimationFrame(captureFrame);
-    } else {
-      // If we've captured all frames, finish the GIF
-      if (!renderStarted.value) {
-        loadingText.value = "Rendering GIF...";
-        gif.render();
-      }
-      setRenderStarted(true);
-      rendered = true;
-    }
-  }
-  if (!rendered) {
-    captureFrame();
-  }
-  gif.on("finished", function (blob) {
-    setRenderStarted(false);
-    // Create a download link for the GIF
-    link.value.href = URL.createObjectURL(blob);
-    link.value.download = "animated_orbs.gif";
-    link.value.textContent = "Download GIF";
-    console.log("finished");
-    loadingText.value = "Download GIF";
-    // Append the download link to the DOM
-  });
 });
 onUnmounted(() => {
   const { $destroyGif } = useNuxtApp();
@@ -265,8 +270,17 @@ onUnmounted(() => {
       style="background-color: transparent"
     ></canvas>
     <div class="absolute bottom-10 left-4 h-[60px]">
+      <button
+        v-if="!start"
+        @click="startCapturing"
+        class="flex w-[155px] items-center justify-center rounded-xl border border-transparent bg-primary px-4 py-2 text-white transition-all hover:border-primary hover:!bg-white hover:text-primary"
+      >
+        Generate GIF
+      </button>
       <a
+        v-else
         ref="link"
+        @click="clickHandler"
         class="flex w-[155px] items-center justify-center rounded-xl border border-transparent bg-primary px-4 py-2 text-white transition-all hover:border-primary hover:!bg-white hover:text-primary"
       >
         {{ loadingText }}
