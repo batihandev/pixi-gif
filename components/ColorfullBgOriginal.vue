@@ -17,25 +17,60 @@ function map(n, start1, end1, start2, end2) {
 // ColorPalette class
 class ColorPalette {
   constructor() {
-    // Predefined hue values for the specified colors
-    this.hueChoices = [215, 230, 280, 320];
-    this.currentHueIndex = 0; // Initialize the index
+    this.setColors();
     this.setCustomProperties();
+  }
+  setColors() {
+    // pick a random hue somewhere between 220 and 360
+    this.hue = ~~random(220, 360);
+    this.complimentaryHue1 = this.hue + 30;
+    this.complimentaryHue2 = this.hue + 60;
+    // define a fixed saturation and lightness
+    this.saturation = 95;
+    this.lightness = 50;
+
+    // define a base color
+    this.baseColor = hsl(this.hue, this.saturation, this.lightness);
+    // define a complimentary color, 30 degress away from the base
+    this.complimentaryColor1 = hsl(
+      this.complimentaryHue1,
+      this.saturation,
+      this.lightness
+    );
+    // define a second complimentary color, 60 degrees away from the base
+    this.complimentaryColor2 = hsl(
+      this.complimentaryHue2,
+      this.saturation,
+      this.lightness
+    );
+
+    // store the color choices in an array so that a random one can be picked later
+    this.colorChoices = [
+      this.baseColor,
+      this.complimentaryColor1,
+      this.complimentaryColor2,
+    ];
   }
 
   randomColor() {
-    // Get the current hue from the choices
-    const currentHue = this.hueChoices[this.currentHueIndex];
-    // Increment the index for the next call
-    this.currentHueIndex = (this.currentHueIndex + 1) % this.hueChoices.length;
-
-    // Convert the hue to an HSL color
-    const color = hsl(currentHue, 95, 50);
-    return color.replace("#", "0x");
+    // pick a random color
+    return this.colorChoices[~~random(0, this.colorChoices.length)].replace(
+      "#",
+      "0x"
+    );
   }
 
   setCustomProperties() {
-    // No need to set custom properties since you have predefined hues
+    // set CSS custom properties so that the colors defined here can be used throughout the UI
+    document.documentElement.style.setProperty("--hue", this.hue);
+    document.documentElement.style.setProperty(
+      "--hue-complimentary1",
+      this.complimentaryHue1
+    );
+    document.documentElement.style.setProperty(
+      "--hue-complimentary2",
+      this.complimentaryHue2
+    );
   }
 }
 // Orb class
@@ -77,22 +112,71 @@ class Orb {
   }
 
   setBounds() {
-    // Calculate the center of the screen
-    const centerX = window.innerWidth / 2;
-    const centerY = window.innerHeight / 2;
+    // how far from the { x, y } origin can each orb move
+    const maxDist =
+      window.innerWidth < 1000 ? window.innerWidth / 3 : window.innerWidth / 5;
+    // the { x, y } origin for each orb (the bottom right of the screen)
+    const originX = window.innerWidth / 1.25;
+    const originY =
+      window.innerWidth < 1000
+        ? window.innerHeight
+        : window.innerHeight / 1.375;
 
-    // Set the maximum distance from the center
-    const maxDist = Math.min(centerX, centerY) - 150; // Subtract 50 pixels
-
-    // Allow each orb to move x distance away from its center
+    // allow each orb to move x distance away from it's x / y origin
     return {
       x: {
-        min: centerX - maxDist,
-        max: centerX + maxDist,
+        min: originX - maxDist,
+        max: originX + maxDist,
       },
       y: {
-        min: centerY - maxDist,
-        max: centerY + maxDist,
+        min: originY - maxDist,
+        max: originY + maxDist,
+      },
+    };
+  }
+  setBounds() {
+    // how far from the { x, y } origin can each orb move
+    const maxDist =
+      window.innerWidth < 1000 ? window.innerWidth / 3 : window.innerWidth / 5;
+    // the { x, y } origin for each orb (the bottom right of the screen)
+    const originX = window.innerWidth / 1.25;
+    const originY =
+      window.innerWidth < 1000
+        ? window.innerHeight
+        : window.innerHeight / 1.375;
+
+    // allow each orb to move x distance away from it's x / y origin
+    return {
+      x: {
+        min: originX - maxDist,
+        max: originX + maxDist,
+      },
+      y: {
+        min: originY - maxDist,
+        max: originY + maxDist,
+      },
+    };
+  }
+  setBounds() {
+    // how far from the { x, y } origin can each orb move
+    const maxDist =
+      window.innerWidth < 1000 ? window.innerWidth / 3 : window.innerWidth / 5;
+    // the { x, y } origin for each orb (the bottom right of the screen)
+    const originX = window.innerWidth / 1.25;
+    const originY =
+      window.innerWidth < 1000
+        ? window.innerHeight
+        : window.innerHeight / 1.375;
+
+    // allow each orb to move x distance away from it's x / y origin
+    return {
+      x: {
+        min: originX - maxDist,
+        max: originX + maxDist,
+      },
+      y: {
+        min: originY - maxDist,
+        max: originY + maxDist,
       },
     };
   }
@@ -129,24 +213,7 @@ class Orb {
     this.xOff += this.inc;
     this.yOff += this.inc;
   }
-  reset(fill) {
-    this.fill = fill;
-    this.radius = random(window.innerHeight / 6, window.innerHeight / 3);
-    this.xOff = random(0, 1000);
-    this.yOff = random(0, 1000);
-    this.scale = 1;
-    this.x = random(this.bounds["x"].min, this.bounds["x"].max);
-    this.y = random(this.bounds["y"].min, this.bounds["y"].max);
-  }
 
-  isOutOfBounds() {
-    return (
-      this.x < this.bounds["x"].min ||
-      this.x > this.bounds["x"].max ||
-      this.y < this.bounds["y"].min ||
-      this.y > this.bounds["y"].max
-    );
-  }
   render() {
     // update the PIXI.Graphics position and scale values
     this.graphics.x = this.x;
@@ -165,6 +232,17 @@ class Orb {
   }
 }
 const canvas = ref(null);
+let colorPalette = null;
+const orbs = [];
+const colorChanger = () => {
+  console.log("colorChanger");
+  colorPalette.setColors();
+  colorPalette.setCustomProperties();
+
+  orbs.forEach((orb) => {
+    orb.fill = colorPalette.randomColor();
+  });
+};
 onMounted(() => {
   const app = new PIXI.Application({
     // render to <canvas class="orb-canvas"></canvas>
@@ -176,26 +254,23 @@ onMounted(() => {
     backgroundAlpha: 0,
   });
   app.stage.filters = [new KawaseBlurFilter(30, 10, true)];
-  const colorPalette = new ColorPalette();
+  colorPalette = new ColorPalette();
+  // Create colour palette
 
-  for (let i = 0; i < maxOrbs; i++) {
+  // Create orbs
+
+  for (let i = 0; i < 10; i++) {
     const orb = new Orb(colorPalette.randomColor());
-    app.stage.addChild(orb.graphics);
-    orbPool.push(orb);
-  }
-  if (!window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-    app.ticker.maxFPS = 60; // Set the maxFPS to 10
-    app.ticker.add(() => {
-      orbPool.forEach((orb) => {
-        // Check if orb is outside the bounds
-        if (orb.isOutOfBounds()) {
-          // Remove the orb from the stage
-          app.stage.removeChild(orb.graphics);
 
-          // Reset the orb and push it back into the pool
-          orb.reset(colorPalette.randomColor());
-          app.stage.addChild(orb.graphics);
-        }
+    app.stage.addChild(orb.graphics);
+
+    orbs.push(orb);
+  }
+
+  // Animate!
+  if (!window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+    app.ticker.add(() => {
+      orbs.forEach((orb) => {
         orb.update();
         orb.render();
       });
@@ -209,11 +284,19 @@ onMounted(() => {
 });
 </script>
 <template>
-  <div>
+  <div class="relative">
     <canvas
       ref="canvas"
-      class="orb-canvas w-[100dvw] !bg-transparent"
+      class="orb-canvas"
       style="background-color: transparent"
     ></canvas>
+    <div class="absolute bottom-10 left-4 h-[60px]">
+      <button
+        @click="colorChanger()"
+        class="rounded-xl border border-transparent bg-primary px-4 py-2 text-white transition-all hover:border-primary hover:bg-white hover:text-primary"
+      >
+        ColorChange
+      </button>
+    </div>
   </div>
 </template>

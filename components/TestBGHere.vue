@@ -1,11 +1,10 @@
-<script setup lang="ts">
+<script setup>
 import * as PIXI from "pixi.js";
 import { createNoise2D } from "simplex-noise";
 import debounce from "lodash.debounce";
 import hsl from "hsl-to-hex";
 import { KawaseBlurFilter } from "@pixi/filter-kawase-blur";
 const noise2D = createNoise2D();
-
 const orbPool = [];
 const maxOrbs = 10; // Adjust this number based on your needs
 
@@ -19,7 +18,7 @@ function map(n, start1, end1, start2, end2) {
 class ColorPalette {
   constructor() {
     // Predefined hue values for the specified colors
-    this.hueChoices = [215, 230, 235, 320];
+    this.hueChoices = [215, 230, 280, 320];
     this.currentHueIndex = 0; // Initialize the index
     this.setCustomProperties();
   }
@@ -82,11 +81,10 @@ class Orb {
     const centerX = window.innerWidth / 2;
     const centerY = window.innerHeight / 2;
 
-    // Calculate the maximum distance from the center
-    const maxDist =
-      window.innerWidth < 1000 ? window.innerWidth / 3 : window.innerWidth / 5;
+    // Set the maximum distance from the center
+    const maxDist = Math.min(centerX, centerY) - 150; // Subtract 50 pixels
 
-    // Allow each orb to move within a circle around the center
+    // Allow each orb to move x distance away from its center
     return {
       x: {
         min: centerX - maxDist,
@@ -174,6 +172,7 @@ onMounted(() => {
     // auto adjust size to fit the current window
     resizeTo: window,
     // transparent background, we will be creating a gradient background later using CSS
+    transparent: true,
     backgroundAlpha: 0,
   });
   app.stage.filters = [new KawaseBlurFilter(30, 10, true)];
@@ -185,7 +184,7 @@ onMounted(() => {
     orbPool.push(orb);
   }
   if (!window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-    app.ticker.maxFPS = 30; // Set the maxFPS to 10
+    app.ticker.maxFPS = 60; // Set the maxFPS to 10
     app.ticker.add(() => {
       orbPool.forEach((orb) => {
         // Check if orb is outside the bounds
@@ -207,44 +206,13 @@ onMounted(() => {
       orb.render();
     });
   }
-  const numFrames = 40; // Adjust as needed
-  const orbCanvas = canvas.value;
-  const { $createGif } = useNuxtApp();
-  const gif = $createGif();
-  let frameCounter = 0;
-  const frameDelay = 100; // 100ms per frame (adjust as needed)
-  let rendered = false;
-  function captureFrame() {
-    if (frameCounter < numFrames) {
-      gif.addFrame(orbCanvas, { copy: true, delay: frameDelay });
-      frameCounter++;
-      requestAnimationFrame(captureFrame);
-    } else {
-      // If we've captured all frames, finish the GIF
-      gif.render();
-      rendered = true;
-    }
-  }
-  if (!rendered) {
-    captureFrame();
-  }
-  gif.on("finished", function (blob) {
-    // Create a download link for the GIF
-    const a = document.createElement("a");
-    a.href = URL.createObjectURL(blob);
-    a.download = "animated_orbs.gif";
-    a.textContent = "Download GIF";
-    console.log("finished");
-    // Append the download link to the DOM
-    document.body.appendChild(a);
-  });
 });
 </script>
 <template>
   <div>
     <canvas
       ref="canvas"
-      class="orb-canvas w-full !bg-transparent"
+      class="orb-canvas max-h-[90dvh] w-full !bg-transparent"
       style="background-color: transparent"
     ></canvas>
   </div>

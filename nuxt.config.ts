@@ -91,6 +91,7 @@ export default defineNuxtConfig({
     },
   },
   css: ["mosha-vue-toastify/dist/style.css"],
+  plugins: [{ src: "~/plugins/gif-plugin.js", mode: "client" }],
 
   vite: {
     server: isSecure
@@ -110,4 +111,3 @@ export default defineNuxtConfig({
     },
   },
 });
-

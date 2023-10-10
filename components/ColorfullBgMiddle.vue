@@ -212,7 +212,7 @@ onMounted(() => {
   <div>
     <canvas
       ref="canvas"
-      class="orb-canvas w-[100dvw] !bg-transparent"
+      class="orb-canvas w-full !bg-transparent"
       style="background-color: transparent"
     ></canvas>
   </div>
