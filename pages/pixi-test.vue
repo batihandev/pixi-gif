@@ -4,6 +4,7 @@ import { createNoise2D } from "simplex-noise";
 import debounce from "lodash.debounce";
 import hsl from "hsl-to-hex";
 import { KawaseBlurFilter } from "@pixi/filter-kawase-blur";
+import { renderStarted, setRenderStarted } from "@/store/renderStore";
 const noise2D = createNoise2D();
 
 const orbPool = [];
@@ -167,7 +168,12 @@ class Orb {
   }
 }
 const canvas = ref(null);
+const link = ref(null);
+const loadingText = ref("Creating Gif...");
+
 onMounted(() => {
+  const { $createGif } = useNuxtApp();
+  const gif = $createGif();
   const app = new PIXI.Application({
     // render to <canvas class="orb-canvas"></canvas>
     view: canvas.value,
@@ -184,6 +190,7 @@ onMounted(() => {
     app.stage.addChild(orb.graphics);
     orbPool.push(orb);
   }
+  console.log(renderStarted.value);
   if (!window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
     app.ticker.maxFPS = 30; // Set the maxFPS to 10
     app.ticker.add(() => {
@@ -209,11 +216,10 @@ onMounted(() => {
   }
   const numFrames = 40; // Adjust as needed
   const orbCanvas = canvas.value;
-  const { $createGif } = useNuxtApp();
-  const gif = $createGif();
   let frameCounter = 0;
   const frameDelay = 100; // 100ms per frame (adjust as needed)
   let rendered = false;
+
   function captureFrame() {
     if (frameCounter < numFrames) {
       gif.addFrame(orbCanvas, { copy: true, delay: frameDelay });
@@ -221,7 +227,11 @@ onMounted(() => {
       requestAnimationFrame(captureFrame);
     } else {
       // If we've captured all frames, finish the GIF
-      gif.render();
+      if (!renderStarted.value) {
+        loadingText.value = "Rendering GIF...";
+        gif.render();
+      }
+      setRenderStarted(true);
       rendered = true;
     }
   }
@@ -229,23 +239,36 @@ onMounted(() => {
     captureFrame();
   }
   gif.on("finished", function (blob) {
+    setRenderStarted(false);
     // Create a download link for the GIF
-    const a = document.createElement("a");
-    a.href = URL.createObjectURL(blob);
-    a.download = "animated_orbs.gif";
-    a.textContent = "Download GIF";
+    link.value.href = URL.createObjectURL(blob);
+    link.value.download = "animated_orbs.gif";
+    link.value.textContent = "Download GIF";
     console.log("finished");
+    loadingText.value = "Download GIF";
     // Append the download link to the DOM
-    document.body.appendChild(a);
   });
+});
+onUnmounted(() => {
+  const { $destroyGif } = useNuxtApp();
+  $destroyGif();
+  // stop gif from rendering
 });
 </script>
 <template>
-  <div>
+  <div class="relative">
     <canvas
       ref="canvas"
       class="orb-canvas w-full !bg-transparent"
       style="background-color: transparent"
     ></canvas>
+    <div class="absolute bottom-10 left-4 h-[60px]">
+      <a
+        ref="link"
+        class="flex w-[155px] items-center justify-center rounded-xl border border-transparent bg-primary px-4 py-2 text-white transition-all hover:border-primary hover:!bg-white hover:text-primary"
+      >
+        {{ loadingText }}
+      </a>
+    </div>
   </div>
 </template>

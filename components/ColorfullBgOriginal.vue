@@ -293,7 +293,7 @@ onMounted(() => {
     <div class="absolute bottom-10 left-4 h-[60px]">
       <button
         @click="colorChanger()"
-        class="rounded-xl border border-transparent bg-primary px-4 py-2 text-white transition-all hover:border-primary hover:bg-white hover:text-primary"
+        class="rounded-xl border border-transparent bg-primary px-4 py-2 text-white transition-all hover:border-primary hover:!bg-white hover:text-primary"
       >
         ColorChange
       </button>
