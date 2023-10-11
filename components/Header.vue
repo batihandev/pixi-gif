@@ -7,6 +7,9 @@
     <nuxt-link to="/original">Original</nuxt-link>
     <nuxt-link to="/middle">Middle</nuxt-link>
     <nuxt-link to="/pixi-test">Gif</nuxt-link>
-    <nuxt-link to="/perlin-three">PLNTHREE</nuxt-link>
+    <nuxt-link to="/perlin-three-original">PLNTHREE</nuxt-link>
+    <nuxt-link to="/perlin-three-test">PTTEST</nuxt-link>
+    <nuxt-link to="/string-three">StringTHR</nuxt-link>
+    <nuxt-link to="/string-three2">StringTHR2</nuxt-link>
   </div>
 </template>

@@ -2,6 +2,7 @@
 import * as THREE from "three";
 import vertexShaderCode from "~/assets/shaders/vertexShader";
 import fragmentShaderCode from "~/assets/shaders/fragmentShader";
+import { Geometry } from "pixi.js";
 const vertexShader = ref(vertexShaderCode);
 const fragmentShader = ref(fragmentShaderCode);
 
@@ -103,6 +104,9 @@ var primitiveElement = function () {
     fragmentShader: fragmentShader.value,
   });
   let geo = new THREE.IcosahedronGeometry(3, 7);
+
+  // Create a material
+
   let mesh = new THREE.Points(geo, mat);
 
   //---
